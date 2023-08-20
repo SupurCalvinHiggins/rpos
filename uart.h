@@ -65,10 +65,11 @@ static void uart1_putu(u64 n) {
 		'0', '1', '2', '3', '4', '5', '6', '7',
 		'8', '9', 'A', 'B', 'C', 'D', 'E', 'F',
 	};
+	const u64 mask = 0xFL << 60;
 	for (int i = 0; i < 16; ++i) {
-		const u8 c = nibble_to_char[n & 0xF];
+		const u8 c = nibble_to_char[(n & mask) >> 60];
 		uart1_putc(c);
-		n >>= 4;
+		n <<= 4;
 	}
 }
 

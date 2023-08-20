@@ -80,11 +80,11 @@ static inline void gpio_set_clock(u64 pin_mask) {
 	mmio_write(GPIO_GPPUD, 0x0);
 	mmio_spin(150);
 	mmio_write(GPIO_GPPUDCLK0, pin_mask0);
-	//mmio_write(GPIO_GPPUDCLK1, pin_mask1);
+	mmio_write(GPIO_GPPUDCLK1, pin_mask1);
 	mmio_spin(150);
 	mmio_write(GPIO_GPPUD, 0x0);
 	mmio_write(GPIO_GPPUDCLK0, 0x0);
-	//mmio_write(GPIO_GPPUDCLK1, 0x0);
+	mmio_write(GPIO_GPPUDCLK1, 0x0);
 }
 
 #endif
