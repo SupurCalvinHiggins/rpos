@@ -17,4 +17,10 @@ static inline u32 mmio_read(u64 reg) {
 	return *(volatile u32*)reg;
 }
 
+static inline void mmio_spin(u64 cycles) {
+	while (cycles-- > 0) {
+		asm volatile("nop");
+	}
+}
+
 #endif

@@ -35,6 +35,15 @@ static const u64 GPIO_GPPUD = GPIO_BASE + 0x8C;
 static const u64 GPIO_GPPUDCLK0 = GPIO_BASE + 0x98;
 static const u64 GPIO_GPPUDCLK1 = GPIO_BASE + 0x9C;
 
+static const u64 GPIO_MODE_INPUT = 0;
+static const u64 GPIO_MODE_OUTPUT = 1;
+static const u64 GPIO_MODE_ALT0 = 4;
+static const u64 GPIO_MODE_ALT1 = 5;
+static const u64 GPIO_MODE_ALT2 = 6;
+static const u64 GPIO_MODE_ALT3 = 7;
+static const u64 GPIO_MODE_ALT4 = 3;
+static const u64 GPIO_MODE_ALT5 = 2;
+
 static inline void gpio_set_mode(u8 pin, u8 mode) {
 	assert((pin >= 0) && (pin <= 53));
 	assert((mode >= 0) && (mode <= 7));
@@ -43,8 +52,10 @@ static inline void gpio_set_mode(u8 pin, u8 mode) {
 		GPIO_GPFSEL3, GPIO_GPFSEL4, GPIO_GPFSEL5,
 	};
 	const u64 reg = pin_to_reg[pin / 10];
-	const u64 data = mode << (3 * (pin % 10));
-	mmio_write(reg, data);
+	const u32 data = mode << (3 * (pin % 10));
+	const u32 mask = 0x7 << (3 * (pin % 10));
+	const u32 state = mmio_read(reg);
+	mmio_write(reg, (state & ~mask) | data);
 }
 
 static inline void gpio_set_pin(u8 pin) {
@@ -61,6 +72,19 @@ static inline void gpio_clear_pin(u8 pin) {
 	const u64 reg = pin_to_reg[pin / 32];
 	const u64 data = 1 << (pin % 32);
 	mmio_write(reg, data);
+}
+
+static inline void gpio_set_clock(u64 pin_mask) {
+	const u32 pin_mask0 = pin_mask & 0xFFFFFFFF;
+	const u32 pin_mask1 = pin_mask >> 32;
+	mmio_write(GPIO_GPPUD, 0x0);
+	mmio_spin(150);
+	mmio_write(GPIO_GPPUDCLK0, pin_mask0);
+	//mmio_write(GPIO_GPPUDCLK1, pin_mask1);
+	mmio_spin(150);
+	mmio_write(GPIO_GPPUD, 0x0);
+	mmio_write(GPIO_GPPUDCLK0, 0x0);
+	//mmio_write(GPIO_GPPUDCLK1, 0x0);
 }
 
 #endif
