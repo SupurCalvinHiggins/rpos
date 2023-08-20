@@ -28,12 +28,22 @@ _start:
 	b 3b
 
 4:
-	// Set GPIO pin 5 to high.
+	// Set GPIO pin 5.
 	mov x9, 0x3f200000
 	mov w10, 0x8000
 	str w10, [x9]
 	mov w10, 0x20
 	str w10, [x9, 0x1c]
+
+	// Set up the EVT. Note that we start in EL2.
+	ldr x9, =__evt_start
+	msr vbar_el1, x9
+	msr vbar_el2, x9
+
+	// Clear GPIO pin 5.
+	//mov x9, 0x3f200000
+	//mov w10, 0x20
+	//str w10, [x9, 0x28]
 
 	// Branch to main.
 	bl main

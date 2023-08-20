@@ -38,5 +38,13 @@ SECTIONS
 	. = ALIGN(4096);
 	__bss_end = .;
 	
+	__evt_start = .;
+	.evt : 
+	{
+		KEEP(*(.text.evt))
+	}
+	. = ALIGN(4096);
+	__evt_end = .;
+	
 	__end = .;
 }

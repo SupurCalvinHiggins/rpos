@@ -3,10 +3,24 @@
 #include "mmio.h"
 
 
+void handle_exception() {
+	uart1_puts((u8*)"Exception!\r\n");
+	while (1);
+}
+
+
 void main() {
-	uart1_init();
+	// Bootstrap complete.
 	gpio_clear_pin(5);
-	uart1_puts((u8*)"Hello world!\r\n");
-	uart1_putu(0x1234567890ABCDEF);
+
+	// Init UART1.
+	uart1_init();
+	uart1_puts((u8*)"UART1 init completed.\r\n");
+
+	// Generate a test exception.
+	uart1_puts((u8*)"Throwing an exception...\r\n");
+	asm volatile("svc 0");
+
+	// Fallback.
 	while (1);
 }
