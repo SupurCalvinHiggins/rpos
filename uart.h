@@ -21,7 +21,7 @@ static const u64 UART1_AUX_MU_CNTL_REG = UART1_BASE + 0x60;
 static const u64 UART1_AUX_MU_STAT_REG = UART1_BASE + 0x64;
 static const u64 UART1_AUX_MU_BAUD_REG = UART1_BASE + 0x68;
 
-static inline void uart1_init() {
+static void uart1_init() {
 	// Set UART pins to UART mode.
 	gpio_set_mode(14, GPIO_MODE_ALT5);
 	gpio_set_mode(15, GPIO_MODE_ALT5);
@@ -50,7 +50,26 @@ static inline void uart1_init() {
 }
 
 static inline void uart1_putc(u8 c) {
+	while (!(mmio_read(UART1_AUX_MU_STAT_REG) & (1 << 1)));
 	mmio_write(UART1_AUX_MU_IO_REG, c);
+}
+
+static void uart1_puts(u8* s) {
+	while (*s != 0) uart1_putc(*s++);
+}
+
+static void uart1_putu(u64 n) {
+	uart1_putc('0');
+	uart1_putc('x');
+	const u8 nibble_to_char[16] = {
+		'0', '1', '2', '3', '4', '5', '6', '7',
+		'8', '9', 'A', 'B', 'C', 'D', 'E', 'F',
+	};
+	for (int i = 0; i < 16; ++i) {
+		const u8 c = nibble_to_char[n & 0xF];
+		uart1_putc(c);
+		n >>= 4;
+	}
 }
 
 #endif
