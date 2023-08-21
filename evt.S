@@ -1,3 +1,12 @@
+/* --------------------------------------------------------------------------------------------- */
+/* Initialize the exception vector tables (EVTs) for the BCM2837 procesor with four Cortex-A53   */
+/* cores. Exception levels EL1, EL2 and EL3 have independent EVTs for a total of three EVTs.     */
+/* Each EVT contains 16 entries with 32 instructions. ARMv8 instructions have a fixed 4 byte     */
+/* width so each entry is 128 bytes. The EVTs must be 2048 byte aligned. Prior to calling the    */
+/* exception handler, the caller saved registers (x0-x18) must be saved to the kernel stack.     */
+/* These registers must be restored after the exception handler returns. Note that exceptions    */
+/* are disabled when entering an exception handler and are restored after an eret.               */
+/* --------------------------------------------------------------------------------------------- */
 
 .section ".text.evt"
 
