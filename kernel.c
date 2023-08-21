@@ -5,7 +5,6 @@
 
 void handle_exception() {
 	uart1_puts((u8*)"Exception!\r\n");
-	while (1);
 }
 
 
@@ -20,6 +19,9 @@ void main() {
 	// Generate a test exception.
 	uart1_puts((u8*)"Throwing an exception...\r\n");
 	asm volatile("svc 0");
+
+	// Ensure control flow is returned.
+	uart1_puts((u8*)"Recovered from exception.\r\n");
 
 	// Fallback.
 	while (1);
